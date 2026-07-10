@@ -440,7 +440,7 @@ namespace nmos
                 if (current_status.is_null())
                 {
                     // should never happen, missing receiver/sender monitor status property
-                    slog::log<slog::severities::error>(gate, SLOG_FLF) << U("receiver/sender monitor status property: {level=") << status_property_id.level << U(", index=") << status_property_id.index << U("} not found");
+                    slog::log<slog::severities::error>(gate, SLOG_FLF) << "receiver/sender monitor status property: {level=" << status_property_id.level << ", index=" << status_property_id.index << "} not found";
                     return false;
                 }
 
@@ -1124,7 +1124,7 @@ namespace nmos
                 }
             }
             // unknown property
-            slog::log<slog::severities::error>(gate, SLOG_FLF) << U("unknown property: {level=") << property_id.level << U(", index=") << property_id.index << U("} to do Get");
+            slog::log<slog::severities::error>(gate, SLOG_FLF) << "unknown property: {level=" << property_id.level << ", index=" << property_id.index << "} to do Get";
             return web::json::value::null();
         }
 
@@ -1176,7 +1176,7 @@ namespace nmos
             }
             catch (const nmos::control_protocol_exception& e)
             {
-                slog::log<slog::severities::error>(gate, SLOG_FLF) << "Set property name : " << property_name.c_str() << " error: " << e.what();
+                slog::log<slog::severities::error>(gate, SLOG_FLF) << "Set property name : " << utility::us2s(property_name.c_str()) << " error: " << e.what();
                 return false;
             }
         }
