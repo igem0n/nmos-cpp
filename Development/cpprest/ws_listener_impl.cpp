@@ -318,11 +318,7 @@ namespace web
                                 }
                                 else
                                 {
-#if BOOST_VERSION >= 106600
-                                    server.get_io_service().restart();
-#else
-                                    server.get_io_service().reset();
-#endif
+                                    server.get_io_context().restart();
                                 }
                                 server.start_perpetual();
                                 // hmm, is one thread enough?
@@ -343,9 +339,8 @@ namespace web
                                 {
                                     server.set_listen_backlog(configuration().backlog());
                                 }
-                                websocketpp::lib::asio::ip::tcp::resolver resolver(server.get_io_service());
-                                websocketpp::lib::asio::ip::tcp::resolver::query query(host, service, {});
-                                websocketpp::lib::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+                                websocketpp::lib::asio::ip::tcp::resolver resolver(server.get_io_context());
+                                websocketpp::lib::asio::ip::tcp::endpoint endpoint = *resolver.resolve(host, service).begin();
                                 websocketpp::lib::error_code ec;
                                 server.listen(endpoint, ec);
                                 // if the error is "Underlying Transport Error" (pass_through), this might be a platform that doesn't support IPv6
@@ -357,8 +352,7 @@ namespace web
                                 {
                                     // retry, limiting ourselves to IPv4
                                     server.get_alog().write(websocketpp::log::alevel::app, "listening with IPv6 failed; retrying with IPv4 only");
-                                    websocketpp::lib::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), host, service);
-                                    websocketpp::lib::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+                                    websocketpp::lib::asio::ip::tcp::endpoint endpoint = *resolver.resolve(boost::asio::ip::tcp::v4(), host, service).begin();
                                     server.listen(endpoint);
                                 }
                                 // otherwise treat any error as usual
